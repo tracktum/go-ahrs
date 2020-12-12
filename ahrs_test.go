@@ -104,3 +104,35 @@ func TestAHRS(t *testing.T) {
 	e /= float64(len(data))
 	require.LessOrEqual(t, e, 0.2)
 }
+
+func BenchmarkMadgwick(b *testing.B) {
+	data, err := readCSV(dataFile)
+	l := len(data)
+	require.NoError(b, err)
+	madgwick := ahrs.NewMadgwick(0.1, 100)
+	b.ResetTimer()
+	for i := 0; i < b.N; i++ {
+		d := data[i%l]
+		madgwick.Update9D(
+			d.gyro[0], d.gyro[1], d.gyro[1],
+			d.acce[0], d.acce[1], d.acce[1],
+			d.magn[0], d.magn[1], d.magn[1],
+		)
+	}
+}
+
+func BenchmarkMahony(b *testing.B) {
+	data, err := readCSV(dataFile)
+	l := len(data)
+	require.NoError(b, err)
+	mahony := ahrs.NewDefaultMahony(100)
+	b.ResetTimer()
+	for i := 0; i < b.N; i++ {
+		d := data[i%l]
+		mahony.Update9D(
+			d.gyro[0], d.gyro[1], d.gyro[1],
+			d.acce[0], d.acce[1], d.acce[1],
+			d.magn[0], d.magn[1], d.magn[1],
+		)
+	}
+}
