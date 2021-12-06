@@ -2,7 +2,7 @@
 
 ## Installation 
 ```sh
-go get github.com/trakctum/go-ahrs
+go get github.com/tracktum/go-ahrs
 ```
 
 ## Usage
